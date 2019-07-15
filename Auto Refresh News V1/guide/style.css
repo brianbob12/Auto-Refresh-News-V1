@@ -1,0 +1,32 @@
+.topBar{
+  width:100%;
+  height:5%;
+  padding:0%;
+  background-color: gray;
+}
+.barBox{
+  height:100%;
+  width:20%;
+  margin-right: 5px;
+  border-color: black;
+  float: left;
+  text-align: center;
+  color:black;
+}
+.barBox:hover{
+  color:white;
+  background-color: black;
+}
+#selected{
+  background-color: red;
+}
+h2{
+  text-decoration: underline;
+}
+#badURL{
+  background-color: black;
+  padding: 0.5%;
+}
+table, th, td {
+  border: 1px solid black;
+}
