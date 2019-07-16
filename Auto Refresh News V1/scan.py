@@ -107,6 +107,7 @@ while True:
                     temp=getHTML(url).count(groups[i][2][k].encode())
                     if temp!=KeyCountByGroup[i][j][k]:
                         print(url,"changed")
+                        KeyCoutByGroup[i][j][k]=temp
                         sendEmail(groups[i][0],groups[i][1][j],groups[i][2][k])
     except Exception as e:
         print(e)
