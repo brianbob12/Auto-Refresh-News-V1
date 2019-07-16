@@ -21,7 +21,7 @@ def loadStuff():
             emails.append(i[:-1])
             
 def getURL(site,word):
-    out="http://www.google.com/search?q="
+    out="https://www.google.com/search?q="
     site=site.lower()
     site=site.replace(" ","+")
     word=word.replace(" ","+")
@@ -94,11 +94,12 @@ for group in groups:
         temp2.append([])
         for keyword in group[2]:
             temp[-1].append(getURL(site,keyword))
-            temp2[-1].append(getHTML(temp[-1]).count(keyword.encode()))
+            temp2[-1].append(getHTML(temp[-1][-1]).count(keyword.encode()))
+            print(temp2)
     urlsByGroup.append([i for i in temp])
     KeyCountByGroup.append([i for i in temp2])
 print(urlsByGroup)
-
+lastt=time.time()
 while True:
     try:
         for i,group in enumerate(urlsByGroup):
@@ -107,9 +108,14 @@ while True:
                     temp=getHTML(url).count(groups[i][2][k].encode())
                     if temp!=KeyCountByGroup[i][j][k]:
                         print(url,"changed")
-                        KeyCoutByGroup[i][j][k]=temp
                         sendEmail(groups[i][0],groups[i][1][j],groups[i][2][k])
+        print("-"*20)
+        print("CYCLE COMPLETE")
+        print("time:",time.time()-lastt)
+        print("-"*20)
+        lastt=time.time()
     except Exception as e:
         print(e)
         print("ERROR, PGROGRAM STOPPED")
         input("press enter to close")
+        exit()
