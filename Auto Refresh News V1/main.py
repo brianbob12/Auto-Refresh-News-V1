@@ -75,18 +75,20 @@ def addNewKey():
 def removeSite(index):
     values = [elements["listbox"].get(idx) for idx in elements["listbox"].curselection()]
     print(values)
-    for i,v in enumerate(groups[index][1]):
-        if v in values:
-            del groups[index][1][i]
+    for value in values:
+        for i,v in enumerate(groups[index][1]):
+            if v ==value:
+                del groups[index][1][i]
     updateGroups()
     loadState2(groups[index][0])
     
 def removeKey(index):
     values = [elements["listbox"].get(idx) for idx in elements["listbox"].curselection()]
     print(values)
-    for i,v in enumerate(groups[index][2]):
-        if v in values:
-            del groups[index][2][i]
+    for value in values:
+        for i,v in enumerate(groups[index][2]):
+            if v==value:
+                del groups[index][2][i]
     updateGroups()
     loadState3(groups[index][0])
     
@@ -108,9 +110,10 @@ def removeGroup(x):
 def removeEmails():
     values = [elements["listbox"].get(idx) for idx in elements["listbox"].curselection()]
     print(values)
-    for i,v in enumerate(emails):
-        if v in values:
-            del emails[i]
+    for value in values:
+        for i,v in enumerate(emails):
+            if v ==value:
+                del emails[i]
     toW=""
     for email in emails:
         toW+=email+"\n"
