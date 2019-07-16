@@ -57,7 +57,10 @@ def addNew():
     else:
         groups[xVal][1].append(elements["entry"].get())
     updateGroups()
-    loadState1(groups[xVal][0])
+    if xVal==-1:
+        loadState1("All")
+    else:
+        loadState1(groups[xVal][0])
     elements["entry"].delete(first=0,last=len(elements["entry"].get()))
 
 def addNewKey():
@@ -69,7 +72,10 @@ def addNewKey():
     else:
         [groups[xVal][2].append(i) for i in tad]
     updateGroups()
-    loadState1(groups[xVal][0])
+    if xVal==-1:
+        loadState1("All")
+    else:
+        loadState1(groups[xVal][0])
     elements["keyEntry"].delete(first=0,last=len(elements["keyEntry"].get()))
     
 def removeSite(index):
