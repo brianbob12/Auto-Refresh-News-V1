@@ -21,7 +21,6 @@ def loadStuff():
             emails.append(i[:-1])
             
 def getURL(site,word):
-    out="https://www.ecosia.org/search?q="
     site=site.lower()
     site=site.replace(" ","+")
     word=word.replace(" ","+")
@@ -29,8 +28,12 @@ def getURL(site,word):
     word=word.replace(",","%2C")
     site=site.replace("=","%3D")
     word=word.replace("=","%3D")
-    out+='"'+site+'"'
-    out+="+"
+    if site in specialCases.keys():
+        out=specialCases[site]
+    else:
+        out="https://www.ecosia.org/search?q="
+        out+='"'+site+'"'
+        out+="+"
     out+=word
     return out
 
@@ -83,7 +86,14 @@ def getHTML(url):
     #time.sleep(1) << handycap for not getting blocked
     out=res.lower()
     return out
-
+specialCases={
+    "ft.com":"https://www.ft.com/search?q=",
+    "bloomberg.com":"https://www.bloomberg.com/search?query=",
+    "thetimes.co.uk":"https://www.thetimes.co.uk/search?source=search-page&q=",
+    "reuters.com":"https://uk.reuters.com/search/news?sortBy=&dateRange=&blob=",
+    "spiegel.de":"https://www.spiegel.de/suche/?suchbegriff=",
+    "faz.net":"https://www.faz.net/suche/?query="
+    }
 loadStuff()
 urlsByGroup=[]
 KeyCountByGroup=[]
@@ -124,7 +134,7 @@ while True:
                             triggerHistory[i][j][k]=counter
                             continue
                         triggerHistory[i][j][k]=counter
-                        if abs(temp-KeyCountByGroup[i][j][k])>threshold:
+                        if abs(temp-KeyCountByGroup[i][j][k])>threshold or groups[i][0][j] in specialCases.keys():
                             KeyCountByGroup[i][j][k]=temp
                             sendEmail(groups[i][0],groups[i][1][j],groups[i][2][k],url)
                             print("takiing a break")
