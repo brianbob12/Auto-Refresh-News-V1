@@ -21,7 +21,7 @@ def loadStuff():
             emails.append(i[:-1])
             
 def getURL(site,word):
-    out="https://www.google.com/search?q="
+    out="https://www.ecosia.org/search?q="
     site=site.lower()
     site=site.replace(" ","+")
     word=word.replace(" ","+")
@@ -29,13 +29,13 @@ def getURL(site,word):
     word=word.replace(",","%2C")
     site=site.replace("=","%3D")
     word=word.replace("=","%3D")
-    out+=site
-    out+="%3A+"
+    out+='"'+site+'"'
+    out+="+"
     out+=word
     return out
 
 
-def sendEmail(group,site,word):
+def sendEmail(group,site,word,url):
     print("sending email...")
     
     port = 465  # For SSL
@@ -52,7 +52,7 @@ def sendEmail(group,site,word):
     text+="Group: "+group+"\n"
     htmlPart+="Group: <b>"+group+"</b><br>\n"
     text+=site+" was updated\n"
-    htmlPart+='<a href="'+site+'">'+site+'</a><br>\n'
+    htmlPart+="<a href='"+url+"'>'+url+'</a><br>\n"
     text+="date and time: "+str(datetime.datetime.now())+" (US format)\n"
     htmlPart+="date and time: "+str(datetime.datetime.now())+" (US format)<br>\n"
     htmlPart+="</p>\n</body>\n</html>"
@@ -80,39 +80,66 @@ def sendEmail(group,site,word):
 def getHTML(url):
     out=""
     res=subprocess.check_output(["curl",url])
+    #time.sleep(1) << handycap for not getting blocked
     out=res.lower()
     return out
 
 loadStuff()
 urlsByGroup=[]
 KeyCountByGroup=[]
+threshold=7
+loopLimiter=7
+triggerHistory=[]
 for group in groups:
     temp=[]
     temp2=[]
+    triggerHistory.append([])
     for site in group[1]:
         temp.append([])
         temp2.append([])
+        triggerHistory[-1].append([])
         for keyword in group[2]:
             temp[-1].append(getURL(site,keyword))
             temp2[-1].append(getHTML(temp[-1][-1]).count(keyword.encode()))
+            triggerHistory[-1][-1].append(0)
             print(temp2)
     urlsByGroup.append([i for i in temp])
     KeyCountByGroup.append([i for i in temp2])
 print(urlsByGroup)
 lastt=time.time()
+counter=0
 while True:
     try:
         for i,group in enumerate(urlsByGroup):
             for j,site in enumerate(group):
                 for k,url in enumerate(site):
-                    temp=getHTML(url).count(groups[i][2][k].encode())
+                    temp=getHTML(url)
+                    print(len(temp),i,j,k)
+                    temp=temp.count(groups[i][2][k].encode())
                     if temp!=KeyCountByGroup[i][j][k]:
                         print(url,"changed")
-                        sendEmail(groups[i][0],groups[i][1][j],groups[i][2][k])
+                        print(KeyCountByGroup[i][j][k],(temp))
+                        if counter-triggerHistory[i][j][k]<=loopLimiter:
+                            print("this is tirggering too often, ignoring")
+                            triggerHistory[i][j][k]=counter
+                            continue
+                        triggerHistory[i][j][k]=counter
+                        if abs(temp-KeyCountByGroup[i][j][k])>threshold:
+                            KeyCountByGroup[i][j][k]=temp
+                            sendEmail(groups[i][0],groups[i][1][j],groups[i][2][k],url)
+                            print("takiing a break")
+                            print ("taking a break",end="")
+                            for i in range(4):
+                                time.sleep(30)
+                                print(".",end="")
+                            print()
+                        else:
+                            print("below threshold")
         print("-"*20)
         print("CYCLE COMPLETE")
         print("time:",time.time()-lastt)
         print("-"*20)
+        counter+=1
         lastt=time.time()
     except Exception as e:
         print(e)
