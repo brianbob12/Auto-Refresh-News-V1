@@ -137,7 +137,7 @@ while True:
                         if abs(temp-KeyCountByGroup[i][j][k])>threshold or groups[i][0][j] in specialCases.keys():
                             KeyCountByGroup[i][j][k]=temp
                             sendEmail(groups[i][0],groups[i][1][j],groups[i][2][k],url)
-                            print("takiing a break")
+                            print("taking a break")
                             print ("taking a break",end="")
                             for i in range(4):
                                 time.sleep(30)
